@@ -1,0 +1,13 @@
+# blender
+*.blend1
+*.blend2
+
+# assets (large binaries — track via asset-log.md, not git)
+world/assets/
+
+# os
+.DS_Store
+Thumbs.db
+
+# fbx exports (large binaries)
+world/fbx/*.fbx
