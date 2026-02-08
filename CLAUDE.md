@@ -15,7 +15,7 @@ these are hard limits. violating any of these is a build failure.
 | format | fbx |
 | max polys per object | 50,000 |
 | max textures per material | 2 |
-| max texture resolution | 2048x2048 |
+| max texture resolution | 4096x4096 (recommended: 1024 for Quest perf) |
 | texture format | png |
 | max materials per object | 2 |
 | custom shaders | not allowed |
@@ -96,6 +96,39 @@ key tools:
 - `get_viewport_screenshot` — visual verification
 - `search_polyhaven_assets` / `download_polyhaven_asset` — poly haven integration
 - `search_sketchfab_models` / `download_sketchfab_model` — sketchfab integration
+
+## critical import notes (from research)
+
+**these are things Blender CANNOT do for Horizon — must be done in the Horizon Desktop Editor:**
+
+- **materials**: Blender material properties (roughness, metallic, emission values) are IGNORED on import. only the material name suffix matters. to transfer appearance, must bake textures into channel-packed PNGs (_BR for base+roughness, _MEO for metal+emissive+AO).
+- **lighting**: all Blender lights are IGNORED on import. must recreate using Static Light and Dynamic Light Gizmos in Horizon.
+- **emissive glow**: _Unlit materials appear bright but do NOT cast light on surroundings. pair with light gizmos.
+- **no bloom**: Quest has no post-processing. glow effects must be faked with particles + lights.
+- **scripting**: Horizon uses TypeScript for interactivity. audio triggers, light animation, UI panels all done via TS in the Desktop Editor.
+- **audio**: no live streaming. pre-recorded files only (up to 20 min loops). spatial audio via Sound Recorder Gizmo.
+- **desktop editor**: Windows only. no macOS support.
+
+### texture channel packing (for baked textures)
+
+| texture | suffix | R | G | B | A |
+|---|---|---|---|---|---|
+| TextureA | `_BR` | base R | base G | base B | roughness |
+| TextureB | `_MEO` | metalness | emissive | AO | (opacity) |
+
+### horizon gizmos relevant to our venue
+
+| gizmo | purpose |
+|---|---|
+| Static Light | baked point/spot/directional lights |
+| Dynamic Light | scriptable lights for light shows |
+| Environment | ambient light, fog, skybox |
+| Sound Recorder | spatial audio sources, 20 min max |
+| Spawn Point | player entry position + facing |
+| Trigger Zone | detect players in areas (dance floor, VIP) |
+| Custom UI | interactive panels (DJ booth controls) |
+| ParticleFX | fog, sparks, haze effects |
+| Script | TypeScript logic |
 
 ## tone
 
